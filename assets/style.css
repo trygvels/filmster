@@ -1,0 +1,164 @@
+body {
+    background-color: #FEBEED;
+}
+
+.layout {
+    background-color: #FEBEED;
+    min-width: 400px;
+    max-width: 800px;
+    min-height: 100vh;
+    margin: 0 auto;
+}
+
+.title {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 7vw;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    color: #000;  
+    text-align: right;
+    white-space: pre-line;
+}
+
+.main-div {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.background-image {
+    width: 100%;
+    max-width: 800px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.output-content {
+    position: absolute;
+    color: black;
+    padding: 20px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.controls {
+    margin-left: 20px;
+    padding: 20px;
+    background-color: white;
+    border: 10px solid black;
+    border-radius: 10px;
+    font-family: 'Roboto', sans-serif;
+    margin-bottom: 10px;
+}
+.controls > * {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.button {
+    width: 100%;
+    background-color: black;
+    color: white;
+    padding: 15px;
+    font-size: 18px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 4px;
+    transition-duration: 0.4s;
+    font-family: 'Roboto', sans-serif;
+    margin-bottom: 10px;
+}
+
+.label {
+    font-family: 'Roboto', sans-serif;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.output-content {
+    font-size: 2vw;
+    font-family: 'Roboto', sans-serif;
+    position: absolute;
+    padding: 26% 20% 10% 12%;  /* Top, Right, Bottom, Left padding */
+    overflow: auto;  /* Add scroll bar if content exceeds the div size */
+    height: 100%;  /* Div takes the full height of its parent */
+    width: 100%;  /* Div takes the full width of its parent */
+    box-sizing: border-box;  /* Include padding and border in the div's total width and height */
+    color: white;  /* Adjust text color as needed */
+}
+
+.output-content img {
+    width: 20vw;
+    height: 30vw;
+    border: 2px solid black;
+    margin: 10px;
+}
+
+.movie-title {
+    font-weight: bold;
+    color: #000;
+    font-family: 'Roboto', sans-serif;
+    text-align: center;
+    font-size: 3vw;
+}
+
+.movie-details {
+    color: #000;
+    font-family: 'Roboto', sans-serif;
+}
+
+.movie-description {
+    color: #000;
+    font-family: 'Roboto', sans-serif;
+    border-top: 2px solid #000000;
+}
+
+
+.available {
+    color: green;
+}
+
+.unavailable {
+    color: red;
+}
+
+.description-container {
+    display: flex;
+    font-family: 'Roboto', sans-serif;
+    flex-direction: column;
+    /* justify-content: space-between; */
+}
+
+.description-container > * {
+    margin: 3px;
+    padding: 0;
+}
+
+.content-flex {
+    display: flex;
+}
+
+
+@media (min-width: 800px) {
+    .title {
+        font-size: 56px;  /* Set the font-size to 56px for viewport widths of 800px and above */
+    }
+    .movie-title {
+        font-size: 24px;  /* Set the font-size to 24px for viewport widths of 800px and above */
+    }
+    .output-content {
+        font-size: 16px;  /* Set the base font-size to 16px for viewport widths of 800px and above */
+    }
+    .output-content img {
+        width: 160px;  /* Set the image width to 200px for viewport widths of 800px and above */
+        height: 240px;  /* Set the image height to 300px for viewport widths of 800px and above */
+    }
+}

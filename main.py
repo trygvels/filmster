@@ -122,25 +122,19 @@ def toggle_kategori_filter(type_filter):
     else:
         return False
     
+    
 @app.callback(
-    Output("advanced-options", "style"),
-    [Input("toggle-advanced", "value")],
-)
-def toggle_advanced(value):
-    if "show" in value:
-        return {"display": "block"}
-    else:
-        return {"display": "none"}
-
-@app.callback(
-    Output("background-image", "src"),
+    [
+        Output("background-image", "src"),
+        Output("output-questionmark", "style")
+    ],
     [Input("submit-button", "n_clicks")],
 )
-def change_background(n_clicks):
+def change_background_and_questionmark(n_clicks):
     if n_clicks > 0:
-        return "/assets/pixel_art_tv_black.png"
+        return "/assets/pixel_art_tv_black.png", {"display": "none"}  # Change image and hide question mark
     else:
-        return "/assets/pixel_art_tv.png"
+        return "/assets/pixel_art_tv.png", {"display": "block"}  # Keep original image and show question mark
 
 
 @app.callback(

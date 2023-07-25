@@ -4,12 +4,12 @@ import dash.dash_table as dash_table
 from dash.dependencies import Input, Output, State
 import pandas as pd
 
-df = pd.read_parquet("ratings_filtered.parquet")
+df_raw = pd.read_parquet("ratings_filtered.parquet")
 
-categories = df.columns[-15:].tolist()
+categories = df_raw.columns[-15:].tolist()
 # remove all titles with less than 7 on your rating
-filmer = df.loc[(df["Title Type"] == "movie") | (df["Your Rating"] >= 7)]
-serier = df.loc[(df["Title Type"] != "movie") | (df["Your Rating"] >= 8)]
+filmer = df_raw.loc[(df_raw["Title Type"] == "movie") & (df_raw["Your Rating"] >= 7)].copy()
+serier = df_raw.loc[(df_raw["Title Type"] != "movie") & (df_raw["Your Rating"] >= 8)].copy()
 df = pd.concat([filmer, serier])
 
 genres = set()

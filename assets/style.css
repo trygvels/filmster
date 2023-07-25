@@ -20,11 +20,21 @@ body {
     right: 10px;
     top: 10px;
     font-size: 8vw;
-    font-family: 'Pixelated MS Sans Serif', sans-serif;
     font-weight: bold;
+    font-family: 'Pixelated MS Sans Serif', sans-serif;
     color: #000;  
     text-align: right;
     white-space: pre-line;
+}
+
+.output-questionmark {
+    font-size: 40vw; /* Adjust the font size as needed */
+    position: absolute;
+    font-family: 'Pixelated MS Sans Serif', sans-serif;
+    top: 28%;
+    left: 45%;
+    color: gold;
+    transform: translate(-50%, -50%);
 }
 
 .main-div {
@@ -154,6 +164,8 @@ body {
 
 
 @media (min-width: 800px) {
+    .output-questionmark {
+        font-size: 320px;  /* Set the font-size to 320px for viewport widths of 800px and above */}
     .title {
         font-size: 64px;  /* Set the font-size to 64px for viewport widths of 800px and above */
     }

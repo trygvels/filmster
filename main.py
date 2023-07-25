@@ -38,7 +38,13 @@ app.layout = html.Div(
                     "TRYBEKKAS \n FILMVELGER",
                     className="title"
                 ),
+                html.H1(
+                    "?",
+                    id="output-questionmark",
+                    className="output-questionmark",
+                ),
                 html.Div(
+                    # Show a large questionmark in themiddle of the screen
                     id="output-container",
                     className="output-content",  
                 ),

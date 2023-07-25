@@ -5,6 +5,7 @@ from dash.dependencies import Input, Output, State
 import pandas as pd
 
 df_raw = pd.read_parquet("ratings_filtered.parquet")
+trybekkas_watchlist = pd.read_parquet("watchlist_filtered.parquet")
 
 categories = df_raw.columns[-15:].tolist()
 # remove all titles with less than 7 on your rating
@@ -58,6 +59,11 @@ app.layout = html.Div(
                 dcc.Checklist(
                     id='toggle-advanced',
                     options=[{"label": "Avanserte filtere", "value": "show"}],
+                    value=[]
+                ),
+                dcc.Checklist(
+                    id='toggle-trybekkamode',
+                    options=[{"label": "Trybekkas Watchlist", "value": "show"}],
                     value=[]
                 ),
                 html.Div(
@@ -120,7 +126,15 @@ def toggle_advanced(value):
     else:
         return {"display": "none"}
 
-
+@app.callback(
+    Output("background-image", "src"),
+    [Input("submit-button", "n_clicks")],
+)
+def change_background(n_clicks):
+    if n_clicks > 0:
+        return "/assets/pixel_art_tv_black.png"
+    else:
+        return "/assets/pixel_art_tv.png"
 
 
 @app.callback(
@@ -134,17 +148,23 @@ def toggle_advanced(value):
         Input("type-filter", "value"),
         Input("kategori-filter", "value"), 
         Input("show-button", "n_clicks"),
+        Input("toggle-trybekkamode", "value"),
     ],
 )
-def update_table(genres, years, your_ratings, imdb_ratings, runtime, type_filter, kategori_filter, n):
+def update_table(genres, years, your_ratings, imdb_ratings, runtime, type_filter, kategori_filter, n, trybekkamode):
     if n > 0:
-        dff = df
+        if trybekkamode:
+            dff = trybekkas_watchlist
+        else:
+            dff = df
+    
         if genres:
             dff = dff[dff["Genres"].apply(lambda x: any(genre in x for genre in genres))]
         if years:
             dff = dff[(dff["Year"] >= years[0]) & (dff["Year"] <= years[1])]
         if your_ratings:
-            dff = dff[(dff["Your Rating"] >= your_ratings[0]) & (dff["Your Rating"] <= your_ratings[1])]
+            if not trybekkamode:
+                dff = dff[(dff["Your Rating"] >= your_ratings[0]) & (dff["Your Rating"] <= your_ratings[1])]
         if imdb_ratings:
             dff = dff[(dff["IMDb Rating"] >= imdb_ratings[0]) & (dff["IMDb Rating"] <= imdb_ratings[1])]
         if runtime:
@@ -152,7 +172,8 @@ def update_table(genres, years, your_ratings, imdb_ratings, runtime, type_filter
         if type_filter == "Movie":
             dff = dff[dff["Title Type"] == "movie"]
             # remove movies without True in any of the categories
-            dff = dff[dff[categories].any(axis=1)]
+            if not trybekkamode:
+                dff = dff[dff[categories].any(axis=1)]
 
         elif type_filter == "TV-serie":
             dff = dff[dff["Title Type"].isin(["tvSeries", "tvMiniSeries"])]
@@ -191,23 +212,30 @@ def update_table(genres, years, your_ratings, imdb_ratings, runtime, type_filter
         State("runtime-filter", "value"),
         State("type-filter", "value"),
         State("kategori-filter", "value"),
+        State("toggle-trybekkamode", "value"),
     ],
 )
-def update_output(n_clicks, genres, years, your_ratings, imdb_ratings, runtime, type_filter, kategori_filter):
+def update_output(n_clicks, genres, years, your_ratings, imdb_ratings, runtime, type_filter, kategori_filter, trybekkamode):
     if n_clicks > 0:
-        dff = df
+        if trybekkamode:
+            dff = trybekkas_watchlist
+        else:
+            dff = df
+
         if genres:
             dff = dff[dff["Genres"].apply(lambda x: any(genre in x for genre in genres))]
         if years:
             dff = dff[(dff["Year"] >= years[0]) & (dff["Year"] <= years[1])]
         if your_ratings:
-            dff = dff[(dff["Your Rating"] >= your_ratings[0]) & (dff["Your Rating"] <= your_ratings[1])]
+            if not trybekkamode:
+                dff = dff[(dff["Your Rating"] >= your_ratings[0]) & (dff["Your Rating"] <= your_ratings[1])]
         if imdb_ratings:
             dff = dff[(dff["IMDb Rating"] >= imdb_ratings[0]) & (dff["IMDb Rating"] <= imdb_ratings[1])]
         if type_filter == "Movie":
             dff = dff[dff["Title Type"] == "movie"]
             # remove movies without True in any of the categories
-            dff = dff[dff[categories].any(axis=1)]
+            if not trybekkamode:
+                dff = dff[dff[categories].any(axis=1)]
 
             if runtime:
                 dff = dff[(dff["Runtime (mins)"] >= runtime[0]) & (dff["Runtime (mins)"] <= runtime[1])]
@@ -251,7 +279,7 @@ def update_output(n_clicks, genres, years, your_ratings, imdb_ratings, runtime, 
                             html.Div(
                                 [
                                     html.P(
-                                        f"{int(selected_movie['Runtime (mins)'])} min. Directed by {selected_movie['Directors']}. [{selected_movie['Genres']}]", 
+                                        f"{int(selected_movie['Runtime (mins)'])} min. Directed by {selected_movie['Directors']}. \n[{selected_movie['Genres']}]", 
                                         className="movie-details"
                                     ),
                                     html.P(f"Strømming: {streaming}", className=streaming_color),

@@ -1,3 +1,8 @@
+@font-face {
+    font-family: 'Pixelated MS Sans Serif';
+    src: url('/assets/ms-sans-serif.ttf') format('truetype');
+}
+
 body {
     background-color: #FEBEED;
 }
@@ -14,8 +19,8 @@ body {
     position: absolute;
     right: 10px;
     top: 10px;
-    font-size: 7vw;
-    font-family: 'Roboto', sans-serif;
+    font-size: 8vw;
+    font-family: 'Pixelated MS Sans Serif', sans-serif;
     font-weight: bold;
     color: #000;  
     text-align: right;
@@ -85,9 +90,9 @@ body {
 
 .output-content {
     font-size: 2vw;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Pixelated MS Sans Serif', sans-serif;
     position: absolute;
-    padding: 26% 20% 10% 12%;  /* Top, Right, Bottom, Left padding */
+    padding: 25% 18% 10% 10%;  /* Top, Right, Bottom, Left padding */
     overflow: auto;  /* Add scroll bar if content exceeds the div size */
     height: 100%;  /* Div takes the full height of its parent */
     width: 100%;  /* Div takes the full width of its parent */
@@ -98,29 +103,29 @@ body {
 .output-content img {
     width: 20vw;
     height: 30vw;
-    border: 2px solid black;
+    border: 2px solid white;
     margin: 10px;
 }
 
 .movie-title {
     font-weight: bold;
-    color: #000;
-    font-family: 'Roboto', sans-serif;
+    color: white;
+    font-family: 'Pixelated MS Sans Serif', sans-serif;
     text-align: center;
     font-size: 3vw;
 }
 
 .movie-details {
-    color: #000;
-    font-family: 'Roboto', sans-serif;
+    color: white;
+    font-family: 'Pixelated MS Sans Serif', sans-serif;
 }
 
 .movie-description {
-    color: #000;
-    font-family: 'Roboto', sans-serif;
-    border-top: 2px solid #000000;
+    color: white;
+    font-family: 'Pixelated MS Sans Serif', sans-serif;
+    border-top: 1px solid white;
+    
 }
-
 
 .available {
     color: green;
@@ -132,13 +137,12 @@ body {
 
 .description-container {
     display: flex;
-    font-family: 'Roboto', sans-serif;
-    flex-direction: column;
+    font-family: 'Pixelated MS Sans Serif', sans-serif;    flex-direction: column;
     /* justify-content: space-between; */
 }
 
 .description-container > * {
-    margin: 3px;
+    margin: 1vw;
     padding: 0;
 }
 
@@ -149,7 +153,7 @@ body {
 
 @media (min-width: 800px) {
     .title {
-        font-size: 56px;  /* Set the font-size to 56px for viewport widths of 800px and above */
+        font-size: 64px;  /* Set the font-size to 64px for viewport widths of 800px and above */
     }
     .movie-title {
         font-size: 24px;  /* Set the font-size to 24px for viewport widths of 800px and above */

@@ -4,16 +4,24 @@ import dash.dash_table as dash_table
 from dash.dependencies import Input, Output, State
 import pandas as pd
 
-# df = pd.read_csv('ratings.csv')
 df = pd.read_parquet("ratings_filtered.parquet")
 
+categories = df.columns[-15:].tolist()
+# remove all titles with less than 7 on your rating
+filmer = df.loc[(df["Title Type"] == "movie") | (df["Your Rating"] >= 7)]
+serier = df.loc[(df["Title Type"] != "movie") | (df["Your Rating"] >= 8)]
+df = pd.concat([filmer, serier])
+
 genres = set()
+
 for genre_string in df["Genres"].dropna():
     for genre in genre_string.split(", "):
         genres.add(genre)
 genres = sorted(list(genres))
 
 app = dash.Dash(__name__, external_stylesheets=["https://fonts.googleapis.com/css2?family=Roboto&display=swap"])
+
+
 
 server = app.server
 app.layout = html.Div(
@@ -38,32 +46,51 @@ app.layout = html.Div(
         ),
         html.Div(
             [
-                html.Button("Velg film", id="submit-button", n_clicks=0, className="button"),
+                html.Button("Finn meg noe å se på", id="submit-button", n_clicks=0, className="button"),
                 html.Button("Vis alternativer", id="show-button", n_clicks=0, className="button"),
-                html.Label("Type:", className="label"),
-                dcc.Dropdown(id="type-filter", options=[{"label": "Film", "value": "Movie"}, {"label": "TV-serie", "value": "TV-serie"}], value="Movie"),
-                html.Label("Genres:", className="label"),
-                dcc.Dropdown(id="genre-filter", options=[{"label": genre, "value": genre} for genre in genres], multi=True),
-                html.Label("Year:", className="label"),
-                dcc.RangeSlider(
-                    id="year-filter", min=df["Year"].min(), max=df["Year"].max(), marks=None, step=1, tooltip={"placement": "bottom", "always_visible": True}
+                html.Label("Trybekka's kategorier (Kun for Film):", className="kategorier"),
+                dcc.Dropdown(
+                    id='kategori-filter',
+                    options=[{'label': category, 'value': category} for category in categories],
+                    multi=True,
+                    disabled=False,
                 ),
-                html.Label("Trygves rating:", className="label"),
-                dcc.RangeSlider(
-                    id="your-rating-filter", min=1, max=10, tooltip={"placement": "bottom", "always_visible": True}, value=[9, 10], step=0.1, marks=None
+                dcc.Checklist(
+                    id='toggle-advanced',
+                    options=[{"label": "Avanserte filtere", "value": "show"}],
+                    value=[]
                 ),
-                html.Label("IMDb rating:", className="label"),
-                dcc.RangeSlider(
-                    id="imdb-rating-filter", min=1, max=10, tooltip={"placement": "bottom", "always_visible": True}, value=[7.5, 10], step=0.1, marks=None
-                ),
-                html.Label("Runtime:", className="label"),
-                dcc.RangeSlider(
-                    id="runtime-filter",
-                    min=df[df["Title Type"] == "movie"]["Runtime (mins)"].min(),
-                    max=df[df["Title Type"] == "movie"]["Runtime (mins)"].max(),
-                    tooltip={"placement": "bottom", "always_visible": True},
-                    step=1,
-                    marks=None,
+                html.Div(
+                    id="advanced-options",
+                    style={'display': 'none'},
+                    children=[
+                        html.Label("Type:", className="label"),
+                        dcc.Dropdown(id="type-filter", options=[{"label": "Film", "value": "Movie"}, {"label": "TV-serie", "value": "TV-serie"}], value="Movie"),
+                        # ... advanced options go here ...
+                        html.Label("Genres:", className="label"),
+                        dcc.Dropdown(id="genre-filter", options=[{"label": genre, "value": genre} for genre in genres], multi=True),
+                        html.Label("Year:", className="label"),
+                        dcc.RangeSlider(
+                            id="year-filter", min=df["Year"].min(), max=df["Year"].max(), marks=None, step=1, tooltip={"placement": "bottom", "always_visible": True}
+                        ),
+                        html.Label("Trygves rating:", className="label"),
+                        dcc.RangeSlider(
+                            id="your-rating-filter", min=1, max=10, tooltip={"placement": "bottom", "always_visible": True}, value=[1, 10], step=0.1, marks=None
+                        ),
+                        html.Label("IMDb rating:", className="label"),
+                        dcc.RangeSlider(
+                            id="imdb-rating-filter", min=1, max=10, tooltip={"placement": "bottom", "always_visible": True}, value=[1, 10], step=0.1, marks=None
+                        ),
+                        html.Label("Runtime:", className="label"),
+                        dcc.RangeSlider(
+                            id="runtime-filter",
+                            min=df[df["Title Type"] == "movie"]["Runtime (mins)"].min(),
+                            max=df[df["Title Type"] == "movie"]["Runtime (mins)"].max(),
+                            tooltip={"placement": "bottom", "always_visible": True},
+                            step=1,
+                            marks=None,
+                        ),
+                    ]
                 ),
             ],
             className="controls",
@@ -73,8 +100,27 @@ app.layout = html.Div(
     className="layout",
 )
 
+@app.callback(
+    Output("kategori-filter", "disabled"),
+    [Input("type-filter", "value")],
+)
+def toggle_kategori_filter(type_filter):
+    if type_filter == "TV-serie":
+        return True
+    else:
+        return False
+    
+@app.callback(
+    Output("advanced-options", "style"),
+    [Input("toggle-advanced", "value")],
+)
+def toggle_advanced(value):
+    if "show" in value:
+        return {"display": "block"}
+    else:
+        return {"display": "none"}
 
-# Make this div have a white background and a strong black border
+
 
 
 @app.callback(
@@ -86,10 +132,11 @@ app.layout = html.Div(
         Input("imdb-rating-filter", "value"),
         Input("runtime-filter", "value"),
         Input("type-filter", "value"),
+        Input("kategori-filter", "value"), 
         Input("show-button", "n_clicks"),
     ],
 )
-def update_table(genres, years, your_ratings, imdb_ratings, runtime, type_filter, n):
+def update_table(genres, years, your_ratings, imdb_ratings, runtime, type_filter, kategori_filter, n):
     if n > 0:
         dff = df
         if genres:
@@ -104,8 +151,16 @@ def update_table(genres, years, your_ratings, imdb_ratings, runtime, type_filter
             dff = dff[(dff["Runtime (mins)"] >= runtime[0]) & (dff["Runtime (mins)"] <= runtime[1])]
         if type_filter == "Movie":
             dff = dff[dff["Title Type"] == "movie"]
+            # remove movies without True in any of the categories
+            dff = dff[dff[categories].any(axis=1)]
+
         elif type_filter == "TV-serie":
             dff = dff[dff["Title Type"].isin(["tvSeries", "tvMiniSeries"])]
+
+        
+        if kategori_filter:
+            # Include rows where any of the categories in categories are true
+            dff = dff[dff[kategori_filter].any(axis=1)]
 
         # convert types of dff coluns Streaming and Buy to string
         dff["streaming"] = dff["streaming"].astype(str)
@@ -135,9 +190,10 @@ def update_table(genres, years, your_ratings, imdb_ratings, runtime, type_filter
         State("imdb-rating-filter", "value"),
         State("runtime-filter", "value"),
         State("type-filter", "value"),
+        State("kategori-filter", "value"),
     ],
 )
-def update_output(n_clicks, genres, years, your_ratings, imdb_ratings, runtime, type_filter):
+def update_output(n_clicks, genres, years, your_ratings, imdb_ratings, runtime, type_filter, kategori_filter):
     if n_clicks > 0:
         dff = df
         if genres:
@@ -150,10 +206,17 @@ def update_output(n_clicks, genres, years, your_ratings, imdb_ratings, runtime, 
             dff = dff[(dff["IMDb Rating"] >= imdb_ratings[0]) & (dff["IMDb Rating"] <= imdb_ratings[1])]
         if type_filter == "Movie":
             dff = dff[dff["Title Type"] == "movie"]
+            # remove movies without True in any of the categories
+            dff = dff[dff[categories].any(axis=1)]
+
             if runtime:
                 dff = dff[(dff["Runtime (mins)"] >= runtime[0]) & (dff["Runtime (mins)"] <= runtime[1])]
         elif type_filter == "TV-serie":
             dff = dff[dff["Title Type"].isin(["tvSeries", "tvMiniSeries"])]
+
+        if kategori_filter:
+            # Include rows where any of the categories in categories are true
+            dff = dff[dff[kategori_filter].any(axis=1)]
 
         if not dff.empty:
             selected_movie = dff.sample(n=1).iloc[0]
@@ -206,6 +269,7 @@ def update_output(n_clicks, genres, years, your_ratings, imdb_ratings, runtime, 
                     ),
                 ],
             )
+        return html.Div(html.P("Ingen filmer funnet med disse kriteriene. Prøv igjen."))
     return None
 
 

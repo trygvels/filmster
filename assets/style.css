@@ -162,3 +162,24 @@ body {
         height: 240px;  /* Set the image height to 300px for viewport widths of 800px and above */
     }
 }
+
+#toggle-advanced .checklist label input {
+    display: none;  /* Hide the default checkbox */
+}
+
+#toggle-advanced .checklist label span {
+    font-size: 20px;  /* Increase the size of the label text */
+}
+
+#toggle-advanced .checklist label:before {
+    content: "";  /* Add a pseudo-element to serve as the custom checkbox */
+    display: inline-block;
+    width: 20px;  /* Set the width of the custom checkbox */
+    height: 20px;  /* Set the height of the custom checkbox */
+    margin-right: 10px;  /* Add some space between the custom checkbox and the label text */
+    border: 1px solid #000;  /* Give the custom checkbox a border */
+}
+
+#toggle-advanced .checklist label input:checked + span:before {
+    background: #000;  /* Change the background of the custom checkbox when it's checked */
+}

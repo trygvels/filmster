@@ -113,6 +113,8 @@ body {
     font-family: 'Pixelated MS Sans Serif', sans-serif;
     text-align: center;
     font-size: 3vw;
+    /* Underline the text */
+    text-decoration: underline;
 }
 
 .movie-details {

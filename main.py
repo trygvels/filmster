@@ -270,6 +270,17 @@ def update_output(n_clicks, genres, years, your_ratings, imdb_ratings, runtime, 
             if len(description) > 500:
                 description = description[:500] + "..."
 
+            # runtime to hours and minutes string
+            runtime_hours = int(selected_movie["Runtime (mins)"] / 60)
+            runtime_minutes = int(selected_movie["Runtime (mins)"] % 60)
+            if runtime_hours > 0:
+                runtime = f"{runtime_hours}t {runtime_minutes}min"
+            else:
+                runtime = f"{runtime_minutes}min"
+
+            # check which of the columns in categories are True and return them as a list
+            categories_ = list(selected_movie[categories][selected_movie[categories]].index)
+
             return html.Div(
                 [
                     html.P(f"{selected_movie['Title']} ({selected_movie['Year']})", className="movie-title"),
@@ -279,7 +290,11 @@ def update_output(n_clicks, genres, years, your_ratings, imdb_ratings, runtime, 
                             html.Div(
                                 [
                                     html.P(
-                                        f"{int(selected_movie['Runtime (mins)'])} min. Directed by {selected_movie['Directors']}. \n[{selected_movie['Genres']}]", 
+                                        f"{runtime}. Directed by {selected_movie['Directors']}.", 
+                                        className="movie-details"
+                                    ),
+                                    html.P(
+                                        f"[{selected_movie['Genres']}] [{', '.join(categories_)}]", 
                                         className="movie-details"
                                     ),
                                     html.P(f"Strømming: {streaming}", className=streaming_color),

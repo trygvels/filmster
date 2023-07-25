@@ -122,7 +122,7 @@ def toggle_kategori_filter(type_filter):
     else:
         return False
     
-    
+
 @app.callback(
     [
         Output("background-image", "src"),
@@ -279,7 +279,10 @@ def update_output(n_clicks, genres, years, your_ratings, imdb_ratings, runtime, 
                 runtime = f"{runtime_minutes}min"
 
             # check which of the columns in categories are True and return them as a list
-            categories_ = list(selected_movie[categories][selected_movie[categories]].index)
+            if not trybekkamode:
+                categories_ = list(selected_movie[categories][selected_movie[categories]].index)
+            else:
+                categories_ = []
 
             return html.Div(
                 [
